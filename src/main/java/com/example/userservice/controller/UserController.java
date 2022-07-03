@@ -43,8 +43,8 @@ public class UserController {
         UserDto userDto = mapper.map(requestUser, UserDto.class);
         userService.createUser(userDto);
 
-//        ResponseUser responseUser = mapper.map(userDto, ResponseUser.class);
+        ResponseUser responseUser = mapper.map(userDto, ResponseUser.class);
 
-        return new ResponseEntity(HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
     }
 }
