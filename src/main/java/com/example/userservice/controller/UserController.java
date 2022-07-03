@@ -37,7 +37,7 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public ResponseEntity createUser(@RequestBody RequestUser requestUser) {
+    public ResponseEntity<ResponseUser> createUser(@RequestBody RequestUser requestUser) {
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         UserDto userDto = mapper.map(requestUser, UserDto.class);
