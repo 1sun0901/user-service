@@ -21,7 +21,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/user-service")
+@RequestMapping("/")
 public class UserController {
 
     private final Environment env;
@@ -37,7 +37,6 @@ public class UserController {
 
     @GetMapping("/welcome")
     public String welcome() {
-        System.out.println("greeting.getMessage = " + greeting.getMessage());
         return env.getProperty("greeting.message");
     }
 
