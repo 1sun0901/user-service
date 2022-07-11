@@ -1,10 +1,13 @@
 package com.example.userservice.service;
 
+import com.example.userservice.client.OrderServiceClient;
 import com.example.userservice.dto.UserDto;
 import com.example.userservice.jpa.UserEntity;
 import com.example.userservice.jpa.UserRepository;
 import com.example.userservice.vo.ResponseOrder;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +26,7 @@ import java.util.*;
 
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService{
 
     UserRepository userRepository;
@@ -30,6 +34,8 @@ public class UserServiceImpl implements UserService{
 
     Environment env;
     RestTemplate restTemplate;
+
+    OrderServiceClient orderServiceClient;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -44,11 +50,12 @@ public class UserServiceImpl implements UserService{
     }
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, Environment env, RestTemplate restTemplate) {
+    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, Environment env, RestTemplate restTemplate, OrderServiceClient orderServiceClient) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.env = env;
         this.restTemplate = restTemplate;
+        this.orderServiceClient = orderServiceClient;
     }
 
     @Override
@@ -82,6 +89,8 @@ public class UserServiceImpl implements UserService{
         UserDto userDto = mapper.map(userEntity, UserDto.class);
 
 //        List<ResponseOrder> orders = new ArrayList<>();
+        /*
+        Using as rest template
         String orderUrl = String.format("http://127.0.0.1:8000/order-service/%s/orders",userId);
         ResponseEntity<List<ResponseOrder>> orderListRespose =
                 restTemplate.exchange(orderUrl, HttpMethod.GET, null,
@@ -89,6 +98,20 @@ public class UserServiceImpl implements UserService{
 
                 });
         List<ResponseOrder> orderList = orderListRespose.getBody();
+         */
+
+        /* Using a feign client
+         */
+//        List<ResponseOrder> orderList = orderServiceClient.getOrders(userId);
+
+        //Feign Exception
+        List<ResponseOrder> orderList = null;
+        try {
+            orderList = orderServiceClient.getOrders(userId);
+        } catch(FeignException ex) {
+            log.error(ex.getMessage());
+        }
+
         userDto.setOrders(orderList);
 
         return userDto;
