@@ -105,13 +105,14 @@ public class UserServiceImpl implements UserService{
 //        List<ResponseOrder> orderList = orderServiceClient.getOrders(userId);
 
         //Feign Exception
-        List<ResponseOrder> orderList = null;
-        try {
-            orderList = orderServiceClient.getOrders(userId);
-        } catch(FeignException ex) {
-            log.error(ex.getMessage());
-        }
+//        List<ResponseOrder> orderList = null;
+//        try {
+//            orderList = orderServiceClient.getOrders(userId);
+//        } catch(FeignException ex) {
+//            log.error(ex.getMessage());
+//        }
 
+        List<ResponseOrder> orderList = orderServiceClient.getOrders(userId);
         userDto.setOrders(orderList);
 
         return userDto;
